@@ -10,7 +10,7 @@
  *       id, name,
  *       columns: [ { id, title, cardIds: [cardId, ...] } ],
  *       cards: { [id]: { id, title, description, priority, tags,
- *                        createdBy, createdAt, updatedAt } }
+ *                        createdBy, createdAt, updatedAt, syncId? } }
  *     }
  *   ]
  * }
@@ -20,9 +20,14 @@
  * a qué departamento pertenecen — la UI y los agentes no cargan con ese dato.
  *
  * `createdBy` distingue el origen ("user" hoy, "agent:<nombre>" mañana).
+ * `syncId` (opcional): identificador estable elegido por un agente externo
+ * (sincronización remota, ver js/agents/sync.js) para hacer upsert sin
+ * duplicar tarjetas; las tarjetas creadas a mano no lo tienen. No requiere
+ * bump de SCHEMA_VERSION al ser un campo aditivo y opcional.
  * Toda mutación pasa por el store, se persiste y emite eventos por el bus.
  */
 import { bus } from "./eventBus.js";
+import { resolveColumnForStatus } from "./columnMatch.js";
 
 const SCHEMA_VERSION = 2;
 
@@ -233,6 +238,62 @@ export class Store {
     this.getCard(cardId).updatedAt = Date.now();
     this.persist();
     bus.emit("card:moved", { cardId, fromColumnId: from.id, toColumnId: to.id });
+  }
+
+  /** Busca una tarjeta sincronizada por su syncId dentro de un departamento. */
+  findCardBySyncId(departmentId, syncId) {
+    const department = this.getDepartment(departmentId);
+    if (!department) return null;
+    return Object.values(department.cards).find((c) => c.syncId === syncId) ?? null;
+  }
+
+  /**
+   * Crea o actualiza una tarjeta proveniente de un agente externo (sync
+   * remoto, ver js/agents/sync.js). Upsert por `syncId`: si ya existe una
+   * tarjeta con ese syncId en el departamento, se actualiza y se mueve de
+   * columna según `status`; si no, se crea.
+   */
+  upsertSyncedCard({ departmentId, syncId, title, description = "", priority = "media", status, agent }) {
+    const department = this.getDepartment(departmentId);
+    if (!department) throw new Error(`Departamento no encontrado: ${departmentId}`);
+    if (!syncId) throw new Error("syncId requerido para sincronizar tarjetas de agente");
+
+    const columnId = resolveColumnForStatus(department, status);
+    if (!columnId) throw new Error("El departamento no tiene columnas");
+
+    const existing = this.findCardBySyncId(departmentId, syncId);
+    if (existing) {
+      Object.assign(existing, {
+        title: title?.trim() || existing.title,
+        description,
+        priority,
+        updatedAt: Date.now(),
+      });
+      if (this.findColumnOfCard(existing.id)?.id !== columnId) {
+        this.moveCard(existing.id, columnId); // ya persiste + emite card:moved
+      } else {
+        this.persist();
+      }
+      bus.emit("card:updated", { card: existing });
+      return existing;
+    }
+
+    const card = {
+      id: uid(),
+      syncId,
+      title: title?.trim() || "(sin título)",
+      description,
+      priority,
+      tags: [],
+      createdBy: agent,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+    department.cards[card.id] = card;
+    department.columns.find((c) => c.id === columnId).cardIds.push(card.id);
+    this.persist();
+    bus.emit("card:created", { card, columnId, departmentId: department.id });
+    return card;
   }
 
   // ---- Columnas -----------------------------------------------------------
