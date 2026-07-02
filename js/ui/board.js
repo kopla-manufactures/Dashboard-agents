@@ -7,12 +7,13 @@ import { bus } from "../core/eventBus.js";
 
 export function initBoard({ store, boardEl, emptyStateEl, onEditCard }) {
   function render() {
-    const { columns, cards } = store.state;
+    const dept = store.activeDepartment;
     boardEl.innerHTML = "";
-    emptyStateEl.hidden = columns.length > 0;
+    emptyStateEl.hidden = boardEl.hidden || Boolean(dept && dept.columns.length > 0);
+    if (!dept) return;
 
-    for (const column of columns) {
-      boardEl.appendChild(renderColumn(column, cards));
+    for (const column of dept.columns) {
+      boardEl.appendChild(renderColumn(column, dept.cards));
     }
   }
 

@@ -18,15 +18,24 @@ python3 -m http.server 8000
 # → http://localhost:8000
 ```
 
-## Qué hace hoy (Fase 1 — MVP)
+## Qué hace hoy (Fase 1.5)
 
+- **Departamentos como espacios de trabajo**: Diseño, Junta directiva,
+  Marketing y Mantenimiento vienen de fábrica; crea más con «+ Departamento».
+  Tocar dos veces la pestaña activa permite renombrar o eliminar.
+- **Dashboard ejecutivo** (pestaña Dashboard): KPIs globales, tareas activas
+  por departamento, distribución por prioridad y tabla «Atención requerida»
+  (prioridad alta pendiente, la más antigua primero) para decidir dónde actuar.
 - Columnas: crear, renombrar (tocar el título), eliminar.
 - Tarjetas: crear, editar, eliminar, con prioridad y etiquetas.
 - Mover tarjetas: drag & drop en escritorio; en móvil, desde el selector de
   columna al editar la tarjeta.
-- Persistencia en `localStorage` del navegador.
+- Persistencia en `localStorage` (migración automática de datos v1 → v2).
 - Exportar / importar el tablero como JSON (menú `⋯`).
 - API programática para agentes expuesta como `window.KanbanAPI`.
+
+> El dashboard considera «terminada» una tarea que está en una columna cuyo
+> título sugiere cierre (hecho, done, completado, terminado, finalizado, listo).
 
 ## Arquitectura (modular por capas)
 
@@ -42,6 +51,8 @@ js/
     storage.js        Persistencia con patrón adaptador (hoy: localStorage)
   ui/                 Solo DOM, reacciona a eventos del bus
     board.js          Render de columnas/tarjetas + drag & drop
+    deptBar.js        Pestañas de departamentos
+    dashboard.js      Dashboard ejecutivo (KPIs, barras, tabla de atención)
     cardDialog.js     Formulario crear/editar tarjeta
     toast.js          Notificaciones breves
   agents/
@@ -59,7 +70,9 @@ Un agente opera el tablero solo a través de `KanbanAPI`:
 
 ```js
 // Desde la consola del navegador o cualquier script cargado en la página:
-KanbanAPI.createCard({ title: "Revisar pedidos", columnId: KanbanAPI.listColumns()[0].id, agent: "agent:ventas" });
+const dept = KanbanAPI.findDepartment("Marketing");
+KanbanAPI.createCard({ title: "Programar posts", departmentId: dept.id, agent: "agent:marketing" });
+KanbanAPI.listDepartments();                       // [{ id, name, cardCount }]
 KanbanAPI.on("card:moved", (e) => console.log("se movió", e));
 ```
 
@@ -68,24 +81,35 @@ origen queda trazado desde ya.
 
 ## Hoja de ruta escalonada
 
-- **Fase 1 (esta):** kanban personal, localStorage, API de agentes en página.
+- **Fase 1:** kanban personal, localStorage, API de agentes en página. ✅
+- **Fase 1.5 (esta):** departamentos como espacios de trabajo + dashboard
+  ejecutivo. ✅
 - **Fase 2:** nuevo adaptador de storage (p. ej. GitHub API sobre un JSON del
   repo, o un backend REST) — solo se cambia `js/config.js`.
 - **Fase 3:** agentes externos escribiendo por ese backend compartido;
   filtros por `createdBy`, vistas por persona/equipo.
 
-## Esquema de datos (version 1)
+## Esquema de datos (version 2)
 
 ```json
 {
-  "version": 1,
-  "columns": [{ "id": "…", "title": "Pendiente", "cardIds": ["…"] }],
-  "cards": {
-    "…": {
-      "id": "…", "title": "…", "description": "…",
-      "priority": "baja|media|alta", "tags": ["…"],
-      "createdBy": "user", "createdAt": 0, "updatedAt": 0
+  "version": 2,
+  "activeDepartmentId": "…",
+  "departments": [
+    {
+      "id": "…", "name": "Marketing",
+      "columns": [{ "id": "…", "title": "Pendiente", "cardIds": ["…"] }],
+      "cards": {
+        "…": {
+          "id": "…", "title": "…", "description": "…",
+          "priority": "baja|media|alta", "tags": ["…"],
+          "createdBy": "user | agent:<nombre>", "createdAt": 0, "updatedAt": 0
+        }
+      }
     }
-  }
+  ]
 }
 ```
+
+Los datos guardados con el esquema v1 (un solo tablero) se migran solos: el
+tablero anterior aparece como departamento «General».

@@ -11,6 +11,10 @@
 <body>
   <header class="app-header">
     <h1 class="app-title">Kanban</h1>
+    <nav class="view-tabs" aria-label="Vista">
+      <button id="tab-board" class="view-tab is-active" type="button" aria-pressed="true">Tablero</button>
+      <button id="tab-dashboard" class="view-tab" type="button" aria-pressed="false">Dashboard</button>
+    </nav>
     <div class="app-actions">
       <button id="btn-add-card" class="btn btn-primary" type="button">+ Nueva tarjeta</button>
       <button id="btn-menu" class="btn btn-ghost" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Más opciones">⋯</button>
@@ -23,8 +27,16 @@
     </div>
   </header>
 
+  <nav id="dept-bar" class="dept-bar" aria-label="Departamentos">
+    <!-- Pestañas renderizadas por js/ui/deptBar.js -->
+  </nav>
+
   <main id="board" class="board" aria-label="Tablero kanban">
     <!-- Columnas renderizadas por js/ui/board.js -->
+  </main>
+
+  <main id="dashboard" class="dashboard viz-root" aria-label="Dashboard ejecutivo" hidden>
+    <!-- Métricas renderizadas por js/ui/dashboard.js -->
   </main>
 
   <p id="empty-state" class="empty-state" hidden>

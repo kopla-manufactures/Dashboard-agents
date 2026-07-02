@@ -5,6 +5,8 @@ import { createStorageAdapter } from "./config.js";
 import { Store } from "./core/store.js";
 import { initBoard } from "./ui/board.js";
 import { initCardDialog } from "./ui/cardDialog.js";
+import { initDeptBar } from "./ui/deptBar.js";
+import { initDashboard } from "./ui/dashboard.js";
 import { showToast } from "./ui/toast.js";
 import { createAgentAPI } from "./agents/api.js";
 
@@ -23,10 +25,48 @@ initBoard({
   onEditCard: (cardId) => dialog.openEdit(cardId),
 });
 
+initDeptBar({
+  store,
+  barEl: document.getElementById("dept-bar"),
+});
+
+const dashboard = initDashboard({
+  store,
+  dashboardEl: document.getElementById("dashboard"),
+});
+
+// ---- Cambio de vista: Tablero | Dashboard -----------------------------------
+
+const views = {
+  board: {
+    tab: document.getElementById("tab-board"),
+    els: [document.getElementById("dept-bar"), document.getElementById("board")],
+  },
+  dashboard: {
+    tab: document.getElementById("tab-dashboard"),
+    els: [document.getElementById("dashboard")],
+  },
+};
+
+function showView(name) {
+  for (const [key, view] of Object.entries(views)) {
+    const active = key === name;
+    view.tab.classList.toggle("is-active", active);
+    view.tab.setAttribute("aria-pressed", String(active));
+    view.els.forEach((el) => (el.hidden = !active));
+  }
+  document.getElementById("empty-state").hidden =
+    name !== "board" || (store.activeDepartment?.columns.length ?? 0) > 0;
+  if (name === "dashboard") dashboard.render();
+}
+
+views.board.tab.addEventListener("click", () => showView("board"));
+views.dashboard.tab.addEventListener("click", () => showView("dashboard"));
+
 // ---- Header ---------------------------------------------------------------
 
 document.getElementById("btn-add-card").addEventListener("click", () => {
-  if (store.state.columns.length === 0) {
+  if ((store.activeDepartment?.columns.length ?? 0) === 0) {
     showToast("Primero crea una columna");
     return;
   }
