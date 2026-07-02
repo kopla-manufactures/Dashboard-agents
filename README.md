@@ -6,11 +6,10 @@ servidor estático local.
 
 ## Probar
 
-**En GitHub Pages (una sola vez):**
-1. En el repo: **Settings → Pages → Source: GitHub Actions**.
-2. Haz merge de esta rama a `main` (o pushea a `main`). El workflow
-   `.github/workflows/deploy-pages.yml` publica automáticamente.
-3. La URL queda en `https://<usuario>.github.io/Dashboard-agents/`.
+**En GitHub Pages:** ya está activo en modo clásico (**Settings → Pages →
+Source: Deploy from a branch**, sirviendo `main` desde la raíz). Cada push a
+`main` dispara sola la reconstrucción de GitHub — no requiere workflow propio.
+URL: `https://kopla-manufactures.github.io/Dashboard-agents/`.
 
 **En local:**
 ```bash
