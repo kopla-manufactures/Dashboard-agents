@@ -1,0 +1,15 @@
+{
+  "department": "Marketing",
+  "agent": "agent:marketing-cowork",
+  "updatedAt": "2026-07-02T16:15:00Z",
+  "items": [
+    {
+      "id": "prueba-1",
+      "title": "Preparar campaña de julio",
+      "description": "Definiendo calendario y presupuesto",
+      "status": "en_progreso",
+      "priority": "alta",
+      "updatedAt": "2026-07-02T16:15:00Z"
+    }
+  ]
+}
