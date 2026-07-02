@@ -17,7 +17,7 @@ python3 -m http.server 8000
 # → http://localhost:8000
 ```
 
-## Qué hace hoy (Fase 1.5)
+## Qué hace hoy (Fase 1.6)
 
 - **Departamentos como espacios de trabajo**: Diseño, Junta directiva,
   Marketing y Mantenimiento vienen de fábrica; crea más con «+ Departamento».
@@ -25,6 +25,9 @@ python3 -m http.server 8000
 - **Dashboard ejecutivo** (pestaña Dashboard): KPIs globales, tareas activas
   por departamento, distribución por prioridad y tabla «Atención requerida»
   (prioridad alta pendiente, la más antigua primero) para decidir dónde actuar.
+- **Agentes de Cowork reportando al tablero**: cada departamento puede tener
+  un agente de Cowork que reporta su avance automáticamente como tarjetas
+  (badge 🤖), sin costo ni servicios nuevos — ver sección abajo.
 - Columnas: crear, renombrar (tocar el título), eliminar.
 - Tarjetas: crear, editar, eliminar, con prioridad y etiquetas.
 - Mover tarjetas: drag & drop en escritorio; en móvil, desde el selector de
@@ -53,9 +56,11 @@ js/
     deptBar.js        Pestañas de departamentos
     dashboard.js      Dashboard ejecutivo (KPIs, barras, tabla de atención)
     cardDialog.js     Formulario crear/editar tarjeta
+    syncStatus.js     Indicador de sincronización de agentes en el header
     toast.js          Notificaciones breves
   agents/
-    api.js            API estable para agentes (window.KanbanAPI)
+    api.js            API estable para agentes en página (window.KanbanAPI)
+    sync.js           Lee el estado que reportan agentes de Cowork y hace upsert
 ```
 
 Reglas de dependencia: `ui/` y `agents/` dependen de `core/`; `core/` no
@@ -78,15 +83,34 @@ KanbanAPI.on("card:moved", (e) => console.log("se movió", e));
 Cada tarjeta guarda `createdBy` (`"user"` o `"agent:<nombre>"`), así que el
 origen queda trazado desde ya.
 
+## Agentes de Cowork (reporte automático, gratis)
+
+Los agentes de Cowork son conversaciones de chat, sin acceso al navegador del
+usuario, así que no pueden usar `KanbanAPI` directo. En su lugar, cada uno
+reporta su avance como un archivo JSON commiteado en la **rama `data`** de
+este repo (`agents/<slug-departamento>.json`); el dashboard lo lee vía
+`fetch()` a `raw.githubusercontent.com` (sin token, sin servicios nuevos) al
+cargar la página, cada 5 minutos, y bajo demanda con «Sincronizar agentes
+ahora» en el menú `⋯`. El estado de la última sincronización se ve en el
+header. Cada tarea reportada aparece como tarjeta con badge 🤖 en la columna
+del departamento que corresponda a su `status`.
+
+Protocolo completo, formato exacto del JSON y el tool call esperado:
+[`docs/protocolo-agentes.md`](docs/protocolo-agentes.md) — pégalo (o
+resúmelo) en las instrucciones persistentes de cada agente de Cowork.
+Requiere que ese agente tenga la herramienta de GitHub conectada a este repo
+con permiso de escritura sobre la rama `data`.
+
 ## Hoja de ruta escalonada
 
 - **Fase 1:** kanban personal, localStorage, API de agentes en página. ✅
-- **Fase 1.5 (esta):** departamentos como espacios de trabajo + dashboard
+- **Fase 1.5:** departamentos como espacios de trabajo + dashboard
   ejecutivo. ✅
+- **Fase 1.6 (esta):** agentes de Cowork reportando estado por departamento
+  vía la rama `data`. ✅
 - **Fase 2:** nuevo adaptador de storage (p. ej. GitHub API sobre un JSON del
   repo, o un backend REST) — solo se cambia `js/config.js`.
-- **Fase 3:** agentes externos escribiendo por ese backend compartido;
-  filtros por `createdBy`, vistas por persona/equipo.
+- **Fase 3:** filtros por `createdBy`, vistas por persona/equipo.
 
 ## Esquema de datos (version 2)
 
@@ -102,7 +126,8 @@ origen queda trazado desde ya.
         "…": {
           "id": "…", "title": "…", "description": "…",
           "priority": "baja|media|alta", "tags": ["…"],
-          "createdBy": "user | agent:<nombre>", "createdAt": 0, "updatedAt": 0
+          "createdBy": "user | agent:<nombre>", "createdAt": 0, "updatedAt": 0,
+          "syncId": "opcional — presente solo en tarjetas reportadas por un agente"
         }
       }
     }

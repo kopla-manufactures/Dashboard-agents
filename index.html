@@ -15,10 +15,12 @@
       <button id="tab-board" class="view-tab is-active" type="button" aria-pressed="true">Tablero</button>
       <button id="tab-dashboard" class="view-tab" type="button" aria-pressed="false">Dashboard</button>
     </nav>
+    <span id="agents-sync-indicator" class="agents-sync-indicator" aria-live="polite" aria-atomic="true"></span>
     <div class="app-actions">
       <button id="btn-add-card" class="btn btn-primary" type="button">+ Nueva tarjeta</button>
       <button id="btn-menu" class="btn btn-ghost" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Más opciones">⋯</button>
       <div id="menu-panel" class="menu-panel" hidden>
+        <button id="btn-sync-agents" class="menu-item" type="button">Sincronizar agentes ahora</button>
         <button id="btn-add-column" class="menu-item" type="button">+ Nueva columna</button>
         <button id="btn-export" class="menu-item" type="button">Exportar JSON</button>
         <button id="btn-import" class="menu-item" type="button">Importar JSON</button>

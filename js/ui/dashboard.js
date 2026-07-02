@@ -6,8 +6,8 @@
  * cierre: hecho/done/completado/terminado/finalizado/listo.
  */
 import { bus } from "../core/eventBus.js";
+import { DONE_RE } from "../core/columnMatch.js";
 
-const DONE_RE = /hech|done|complet|termin|finaliz|listo/i;
 const PRIORITIES = ["baja", "media", "alta"];
 
 function computeMetrics(state) {

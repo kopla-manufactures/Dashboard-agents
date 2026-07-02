@@ -6,6 +6,9 @@
  *  - "state:changed"  → { state } tras cualquier mutación
  *  - "card:created" | "card:updated" | "card:deleted" | "card:moved"
  *  - "column:created" | "column:renamed" | "column:deleted"
+ *  - "department:created" | "department:renamed" | "department:deleted" | "department:activated"
+ *  - "agents:sync:start" → {}
+ *  - "agents:sync:done"  → { results: [{departmentId, slug, ok, itemCount?, skipped?, error?}], timestamp }
  */
 const listeners = new Map();
 

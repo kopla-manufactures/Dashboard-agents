@@ -100,6 +100,14 @@ export function initBoard({ store, boardEl, emptyStateEl, onEditCard }) {
     const meta = document.createElement("div");
     meta.className = "card-meta";
 
+    if (card.createdBy?.startsWith("agent:")) {
+      const agentBadge = document.createElement("span");
+      agentBadge.className = "badge badge-agent";
+      agentBadge.title = `Sincronizado por ${card.createdBy}`;
+      agentBadge.textContent = "🤖";
+      meta.appendChild(agentBadge);
+    }
+
     const prio = document.createElement("span");
     prio.className = `badge badge-${card.priority}`;
     prio.textContent = card.priority;

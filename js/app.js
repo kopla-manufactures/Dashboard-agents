@@ -7,8 +7,10 @@ import { initBoard } from "./ui/board.js";
 import { initCardDialog } from "./ui/cardDialog.js";
 import { initDeptBar } from "./ui/deptBar.js";
 import { initDashboard } from "./ui/dashboard.js";
+import { initSyncStatus } from "./ui/syncStatus.js";
 import { showToast } from "./ui/toast.js";
 import { createAgentAPI } from "./agents/api.js";
+import { createAgentSync } from "./agents/sync.js";
 
 const store = new Store(createStorageAdapter());
 createAgentAPI(store);
@@ -34,6 +36,16 @@ const dashboard = initDashboard({
   store,
   dashboardEl: document.getElementById("dashboard"),
 });
+
+// ---- Sincronización de agentes de Cowork -----------------------------------
+
+const agentSync = createAgentSync({ store });
+initSyncStatus({
+  indicatorEl: document.getElementById("agents-sync-indicator"),
+  triggerBtn: document.getElementById("btn-sync-agents"),
+  syncAll: agentSync.syncAll,
+});
+agentSync.start(); // fetch inmediato + reintento cada 5 min mientras la pestaña esté abierta
 
 // ---- Cambio de vista: Tablero | Dashboard -----------------------------------
 
@@ -88,6 +100,10 @@ menuBtn.addEventListener("click", (e) => {
 });
 document.addEventListener("click", (e) => {
   if (!menuPanel.hidden && !menuPanel.contains(e.target)) closeMenu();
+});
+
+document.getElementById("btn-sync-agents").addEventListener("click", () => {
+  closeMenu();
 });
 
 document.getElementById("btn-add-column").addEventListener("click", () => {

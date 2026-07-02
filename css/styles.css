@@ -124,6 +124,16 @@ button, input, select, textarea {
   position: relative;
 }
 
+.agents-sync-indicator {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.agents-sync-indicator.is-error {
+  color: var(--color-danger);
+}
+
 .menu-panel {
   position: absolute;
   top: calc(100% + 6px);
@@ -375,6 +385,7 @@ button, input, select, textarea {
 .badge-alta { background: var(--prio-alta-bg); color: var(--prio-alta-text); }
 .badge-media { background: var(--prio-media-bg); color: var(--prio-media-text); }
 .badge-baja { background: var(--prio-baja-bg); color: var(--prio-baja-text); }
+.badge-agent { background: var(--color-surface-alt); color: var(--color-text-muted); border: 1px solid var(--color-border); }
 
 .tag {
   font-size: 0.75rem;
