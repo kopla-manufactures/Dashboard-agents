@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Kanban — Dashboard Agents</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='1' y='2' width='4' height='12' rx='1' fill='%230b57d0'/><rect x='6' y='2' width='4' height='8' rx='1' fill='%237cacf8'/><rect x='11' y='2' width='4' height='5' rx='1' fill='%23b7d0f7'/></svg>" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1 class="app-title">Kanban</h1>
+    <div class="app-actions">
+      <button id="btn-add-card" class="btn btn-primary" type="button">+ Nueva tarjeta</button>
+      <button id="btn-menu" class="btn btn-ghost" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Más opciones">⋯</button>
+      <div id="menu-panel" class="menu-panel" hidden>
+        <button id="btn-add-column" class="menu-item" type="button">+ Nueva columna</button>
+        <button id="btn-export" class="menu-item" type="button">Exportar JSON</button>
+        <button id="btn-import" class="menu-item" type="button">Importar JSON</button>
+        <input id="import-file" type="file" accept="application/json" hidden />
+      </div>
+    </div>
+  </header>
+
+  <main id="board" class="board" aria-label="Tablero kanban">
+    <!-- Columnas renderizadas por js/ui/board.js -->
+  </main>
+
+  <p id="empty-state" class="empty-state" hidden>
+    No hay columnas. Crea una con «+ Nueva columna».
+  </p>
+
+  <dialog id="card-dialog" class="card-dialog">
+    <form id="card-form" method="dialog">
+      <h2 id="card-dialog-title">Nueva tarjeta</h2>
+      <label class="field">
+        <span>Título *</span>
+        <input name="title" type="text" required maxlength="120" autocomplete="off" />
+      </label>
+      <label class="field">
+        <span>Descripción</span>
+        <textarea name="description" rows="4" maxlength="2000"></textarea>
+      </label>
+      <div class="field-row">
+        <label class="field">
+          <span>Prioridad</span>
+          <select name="priority">
+            <option value="baja">Baja</option>
+            <option value="media" selected>Media</option>
+            <option value="alta">Alta</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Columna</span>
+          <select name="columnId"></select>
+        </label>
+      </div>
+      <label class="field">
+        <span>Etiquetas (separadas por coma)</span>
+        <input name="tags" type="text" maxlength="200" autocomplete="off" />
+      </label>
+      <div class="dialog-actions">
+        <button type="button" id="btn-delete-card" class="btn btn-danger" hidden>Eliminar</button>
+        <span class="spacer"></span>
+        <button type="button" id="btn-cancel-card" class="btn btn-ghost">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
