@@ -14,7 +14,7 @@ export function initCardDialog({ store, dialogEl }) {
 
   function fillColumnOptions(selectedId) {
     columnSelect.innerHTML = "";
-    for (const column of store.state.columns) {
+    for (const column of store.activeDepartment?.columns ?? []) {
       const opt = document.createElement("option");
       opt.value = column.id;
       opt.textContent = column.title;
@@ -28,7 +28,7 @@ export function initCardDialog({ store, dialogEl }) {
     heading.textContent = "Nueva tarjeta";
     deleteBtn.hidden = true;
     form.reset();
-    fillColumnOptions(store.state.columns[0]?.id);
+    fillColumnOptions(store.activeDepartment?.columns[0]?.id);
     dialogEl.showModal();
   }
 
