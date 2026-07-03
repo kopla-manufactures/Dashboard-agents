@@ -1,13 +1,16 @@
 /**
  * Punto de entrada: instancia el store, monta la UI y expone la API de agentes.
  */
-import { createStorageAdapter } from "./config.js";
+import { createStorageAdapter, REMOTE_SYNC } from "./config.js";
+import { bus } from "./core/eventBus.js";
 import { Store } from "./core/store.js";
+import { createBoardSync } from "./core/remoteBoard.js";
 import { initBoard } from "./ui/board.js";
 import { initCardDialog } from "./ui/cardDialog.js";
 import { initDeptBar } from "./ui/deptBar.js";
 import { initDashboard } from "./ui/dashboard.js";
 import { initSyncStatus } from "./ui/syncStatus.js";
+import { initSyncDialog } from "./ui/syncDialog.js";
 import { showToast } from "./ui/toast.js";
 import { createAgentAPI } from "./agents/api.js";
 import { createAgentSync } from "./agents/sync.js";
@@ -46,6 +49,22 @@ initSyncStatus({
   syncAll: agentSync.syncAll,
 });
 agentSync.start(); // fetch inmediato + reintento cada 5 min mientras la pestaña esté abierta
+
+// ---- Sincronización del tablero entre dispositivos (Fase 2) -----------------
+
+const boardSync = createBoardSync({ store, config: REMOTE_SYNC });
+const syncDialog = initSyncDialog({
+  dialogEl: document.getElementById("sync-dialog"),
+  boardSync,
+});
+boardSync.start();
+
+// Los errores de subida sí importan (hay cambios locales sin replicar);
+// los de lectura son ruido esperable sin conexión y van solo a consola.
+bus.on("board:sync:error", ({ op, message }) => {
+  if (op === "push") showToast(`No se pudo subir el tablero: ${message}`);
+  else console.warn("[board-sync] pull falló:", message);
+});
 
 // ---- Cambio de vista: Tablero | Dashboard -----------------------------------
 
@@ -104,6 +123,11 @@ document.addEventListener("click", (e) => {
 
 document.getElementById("btn-sync-agents").addEventListener("click", () => {
   closeMenu();
+});
+
+document.getElementById("btn-sync-config").addEventListener("click", () => {
+  closeMenu();
+  syncDialog.open();
 });
 
 document.getElementById("btn-add-column").addEventListener("click", () => {
