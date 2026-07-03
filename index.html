@@ -5,12 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light dark" />
   <title>Kanban — Dashboard Agents</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='1' y='2' width='4' height='12' rx='1' fill='%230b57d0'/><rect x='6' y='2' width='4' height='8' rx='1' fill='%237cacf8'/><rect x='11' y='2' width='4' height='5' rx='1' fill='%23b7d0f7'/></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230b57d0'/><rect x='6' y='7' width='5.6' height='18' rx='2.2' fill='%23ffffff'/><rect x='13.2' y='7' width='5.6' height='12.5' rx='2.2' fill='%23ffffff' opacity='.72'/><rect x='20.4' y='7' width='5.6' height='8.5' rx='2.2' fill='%23ffffff' opacity='.45'/></svg>" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
   <header class="app-header">
-    <h1 class="app-title">Kanban</h1>
+    <h1 class="app-title">
+      <svg class="app-mark" viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--color-primary)"/><rect x="6" y="7" width="5.6" height="18" rx="2.2" fill="var(--color-primary-text)"/><rect x="13.2" y="7" width="5.6" height="12.5" rx="2.2" fill="var(--color-primary-text)" opacity=".72"/><rect x="20.4" y="7" width="5.6" height="8.5" rx="2.2" fill="var(--color-primary-text)" opacity=".45"/></svg>
+      Kanban
+    </h1>
     <nav class="view-tabs" aria-label="Vista">
       <button id="tab-board" class="view-tab is-active" type="button" aria-pressed="true">Tablero</button>
       <button id="tab-dashboard" class="view-tab" type="button" aria-pressed="false">Dashboard</button>
@@ -20,10 +23,24 @@
       <button id="btn-add-card" class="btn btn-primary" type="button">+ Nueva tarjeta</button>
       <button id="btn-menu" class="btn btn-ghost" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Más opciones">⋯</button>
       <div id="menu-panel" class="menu-panel" hidden>
-        <button id="btn-sync-agents" class="menu-item" type="button">Sincronizar agentes ahora</button>
-        <button id="btn-add-column" class="menu-item" type="button">+ Nueva columna</button>
-        <button id="btn-export" class="menu-item" type="button">Exportar JSON</button>
-        <button id="btn-import" class="menu-item" type="button">Importar JSON</button>
+        <button id="btn-sync-agents" class="menu-item" type="button">
+          <svg class="menu-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9"/><path d="M13.9 2.3v3.5h-3.5"/></svg>
+          Sincronizar agentes ahora
+        </button>
+        <hr class="menu-sep" />
+        <button id="btn-add-column" class="menu-item" type="button">
+          <svg class="menu-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+          Nueva columna
+        </button>
+        <hr class="menu-sep" />
+        <button id="btn-export" class="menu-item" type="button">
+          <svg class="menu-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v8M5 7.5l3 3 3-3"/><path d="M3 13.5h10"/></svg>
+          Exportar JSON
+        </button>
+        <button id="btn-import" class="menu-item" type="button">
+          <svg class="menu-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10.5v-8M5 5.5l3-3 3 3"/><path d="M3 13.5h10"/></svg>
+          Importar JSON
+        </button>
         <input id="import-file" type="file" accept="application/json" hidden />
       </div>
     </div>

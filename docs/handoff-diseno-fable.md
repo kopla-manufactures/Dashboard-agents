@@ -1,5 +1,15 @@
 # Traspaso a Fable 5 — pase final de diseño y estilo
 
+> **Estado: ejecutado** (2026-07-03, Fable 5). Los 6 rough edges fueron
+> atendidos: indicador de sync colapsado a punto de estado en móvil,
+> sombras de scroll en la barra de departamentos, badge de agente con chip
+> circular tintado propio, jerarquía y ritmo del Dashboard, favicon y marca
+> en el header rediseñados, y menú `⋯` con iconos y agrupación. Se
+> añadieron además micro-interacciones (hover/active) con
+> `prefers-reduced-motion` respetado. La paleta de visualización validada
+> no se tocó. Este documento se conserva como referencia de los criterios
+> para futuras pasadas visuales.
+
 Este documento es para la sesión de Fable 5 que va a darle los toques
 finales visuales al kanban. Léelo completo antes de tocar nada.
 
