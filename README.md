@@ -61,6 +61,10 @@ js/
   agents/
     api.js            API estable para agentes en página (window.KanbanAPI)
     sync.js           Lee el estado que reportan agentes de Cowork y hace upsert
+docs/
+  protocolo-agentes.md      Protocolo técnico de reporte (esquema JSON, tool call)
+  agentes/                  Un bloque listo para pegar por departamento
+  handoff-diseno-fable.md   Encargo y notas para el pase de diseño (Fable 5)
 ```
 
 Reglas de dependencia: `ui/` y `agents/` dependen de `core/`; `core/` no
@@ -96,18 +100,34 @@ header. Cada tarea reportada aparece como tarjeta con badge 🤖 en la columna
 del departamento que corresponda a su `status`.
 
 Protocolo completo, formato exacto del JSON y el tool call esperado:
-[`docs/protocolo-agentes.md`](docs/protocolo-agentes.md) — pégalo (o
-resúmelo) en las instrucciones persistentes de cada agente de Cowork.
-Requiere que ese agente tenga la herramienta de GitHub conectada a este repo
-con permiso de escritura sobre la rama `data`.
+[`docs/protocolo-agentes.md`](docs/protocolo-agentes.md). Requiere que ese
+agente tenga la herramienta de GitHub conectada a este repo con permiso de
+escritura sobre la rama `data`.
+
+**Bloques listos para pegar, uno por departamento** (modelo recomendado +
+protocolo ya rellenado, sin tener que adaptar nada a mano):
+[`docs/agentes/`](docs/agentes/) — hay uno para Diseño, Junta directiva,
+Marketing y Mantenimiento; el `README.md` de esa carpeta explica cómo dar de
+alta un departamento nuevo que no esté en la lista.
+
+## Pase de diseño pendiente
+
+La UI de hoy es deliberadamente minimalista — se priorizó que funcione y sea
+accesible antes que el pulido visual. El encargo y las notas concretas para
+esa pasada (qué se puede tocar, qué no, rough edges ya detectados) están en
+[`docs/handoff-diseno-fable.md`](docs/handoff-diseno-fable.md), pensado para
+que lo ejecute Fable 5.
 
 ## Hoja de ruta escalonada
 
 - **Fase 1:** kanban personal, localStorage, API de agentes en página. ✅
 - **Fase 1.5:** departamentos como espacios de trabajo + dashboard
   ejecutivo. ✅
-- **Fase 1.6 (esta):** agentes de Cowork reportando estado por departamento
-  vía la rama `data`. ✅
+- **Fase 1.6:** agentes de Cowork reportando estado por departamento vía la
+  rama `data`. ✅
+- **Fase 1.7 (esta):** bloques de agente listos para los 4 departamentos +
+  traspaso de diseño documentado para Fable 5. ✅
+- **Fase 1.8 (próxima):** pase de diseño/estilo final (Fable 5).
 - **Fase 2:** nuevo adaptador de storage (p. ej. GitHub API sobre un JSON del
   repo, o un backend REST) — solo se cambia `js/config.js`.
 - **Fase 3:** filtros por `createdBy`, vistas por persona/equipo.
