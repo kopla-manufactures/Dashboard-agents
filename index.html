@@ -41,6 +41,10 @@
           <svg class="menu-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 10.5v-8M5 5.5l3-3 3 3"/><path d="M3 13.5h10"/></svg>
           Importar JSON
         </button>
+        <button id="btn-sync-config" class="menu-item" type="button">
+          <svg class="menu-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.8 12.5h6.9a2.8 2.8 0 0 0 .6-5.5A4.1 4.1 0 0 0 4.4 6.6a3 3 0 0 0 .4 5.9z"/></svg>
+          Sincronizar dispositivos…
+        </button>
         <input id="import-file" type="file" accept="application/json" hidden />
       </div>
     </div>
@@ -95,6 +99,30 @@
         <button type="button" id="btn-delete-card" class="btn btn-danger" hidden>Eliminar</button>
         <span class="spacer"></span>
         <button type="button" id="btn-cancel-card" class="btn btn-ghost">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="sync-dialog" class="card-dialog">
+    <form id="sync-form" method="dialog">
+      <h2>Sincronizar entre dispositivos</h2>
+      <p class="dialog-help">
+        El tablero se guarda como <code>board.json</code> en la rama
+        <code>data</code> de este repositorio. Leer no requiere nada; para que
+        este dispositivo también <strong>escriba</strong>, pega un token de
+        GitHub (fine-grained, solo este repo, permiso Contents: lectura y
+        escritura). Guía paso a paso: <code>docs/sincronizacion-dispositivos.md</code>.
+      </p>
+      <p id="sync-status" class="dialog-help sync-status"></p>
+      <label class="field">
+        <span>Token de acceso (se guarda solo en este navegador)</span>
+        <input name="token" type="password" autocomplete="off" placeholder="github_pat_…" />
+      </label>
+      <div class="dialog-actions">
+        <button type="button" id="btn-sync-remove" class="btn btn-danger" hidden>Quitar token</button>
+        <span class="spacer"></span>
+        <button type="button" id="btn-sync-close" class="btn btn-ghost">Cerrar</button>
         <button type="submit" class="btn btn-primary">Guardar</button>
       </div>
     </form>

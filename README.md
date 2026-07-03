@@ -32,7 +32,12 @@ python3 -m http.server 8000
 - Tarjetas: crear, editar, eliminar, con prioridad y etiquetas.
 - Mover tarjetas: drag & drop en escritorio; en móvil, desde el selector de
   columna al editar la tarjeta.
-- Persistencia en `localStorage` (migración automática de datos v1 → v2).
+- **Sincronización entre dispositivos** (menú `⋯` → Sincronizar
+  dispositivos…): el tablero se replica en la rama `data` del repo; leer no
+  requiere nada, escribir requiere un token de GitHub por dispositivo — ver
+  [`docs/sincronizacion-dispositivos.md`](docs/sincronizacion-dispositivos.md).
+- Persistencia local-first en `localStorage` (carga instantánea, funciona
+  offline; migración automática de datos v1 → v2).
 - Exportar / importar el tablero como JSON (menú `⋯`).
 - API programática para agentes expuesta como `window.KanbanAPI`.
 
@@ -49,14 +54,18 @@ js/
   config.js           Configuración central (qué adaptador de storage se usa)
   core/               Lógica pura, sin DOM
     eventBus.js       Pub/sub que desacopla las capas
-    store.js          Estado + mutaciones + esquema de datos (version 1)
+    store.js          Estado + mutaciones + esquema de datos (version 2)
     storage.js        Persistencia con patrón adaptador (hoy: localStorage)
+    remoteBoard.js    Réplica local-first del tablero en la rama data (Fase 2)
+    columnMatch.js    Mapeo status→columna tolerante a renombres
+    slug.js           Slug de departamento a partir de su nombre
   ui/                 Solo DOM, reacciona a eventos del bus
     board.js          Render de columnas/tarjetas + drag & drop
     deptBar.js        Pestañas de departamentos
     dashboard.js      Dashboard ejecutivo (KPIs, barras, tabla de atención)
     cardDialog.js     Formulario crear/editar tarjeta
     syncStatus.js     Indicador de sincronización de agentes en el header
+    syncDialog.js     Diálogo de sincronización entre dispositivos (token)
     toast.js          Notificaciones breves
   agents/
     api.js            API estable para agentes en página (window.KanbanAPI)
@@ -125,11 +134,15 @@ que lo ejecute Fable 5.
   ejecutivo. ✅
 - **Fase 1.6:** agentes de Cowork reportando estado por departamento vía la
   rama `data`. ✅
-- **Fase 1.7 (esta):** bloques de agente listos para los 4 departamentos +
+- **Fase 1.7:** bloques de agente listos para los 4 departamentos +
   traspaso de diseño documentado para Fable 5. ✅
-- **Fase 1.8 (próxima):** pase de diseño/estilo final (Fable 5).
-- **Fase 2:** nuevo adaptador de storage (p. ej. GitHub API sobre un JSON del
-  repo, o un backend REST) — solo se cambia `js/config.js`.
+- **Fase 1.8:** pase de diseño/estilo final (Fable 5). ✅
+- **Fase 2 (esta):** sincronización del tablero entre dispositivos vía la
+  rama `data` (local-first: localStorage sigue siendo la fuente inmediata y
+  `js/core/remoteBoard.js` replica contra `board.json`; leer es anónimo por
+  CDN, escribir usa un token por dispositivo). Se optó por una capa de
+  réplica en vez de reemplazar el adaptador de storage para no volver
+  asíncrona la carga ni perder el modo offline. ✅
 - **Fase 3:** filtros por `createdBy`, vistas por persona/equipo.
 
 ## Esquema de datos (version 2)
